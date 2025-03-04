@@ -1,16 +1,23 @@
 package com.project.LibraryManagementSystem.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.project.LibraryManagementSystem.service.MyUserDetailsService;
 
@@ -20,6 +27,9 @@ public class SecurityConfig
 {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
+
+    @Autowired
+    private JwtFilter jwtFilter;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
@@ -29,17 +39,19 @@ public class SecurityConfig
             .authorizeHttpRequests(request -> request.
                                     requestMatchers("/users/login", "/users/register").permitAll()
                                     .anyRequest().authenticated())
-            .formLogin(login -> login
-                        .loginPage("/users/login")
-                        .loginProcessingUrl("/users/login")
-                        .defaultSuccessUrl("/users/dashboard", true)
-                        .permitAll())
-            .httpBasic(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)).build();
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() 
+    {
+        return new ProviderManager(authenticationProvider());
     }
      
     @Bean
-    public AuthenticationProvider authenticationProvider(MyUserDetailsService myUserDetailsService)
+    public AuthenticationProvider authenticationProvider()
     {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
@@ -47,12 +59,17 @@ public class SecurityConfig
         return provider;
     }
 
-
-    /*
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
+    public CorsFilter corsFilter() 
     {
-        return config.getAuthenticationManager();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost")); // Allow frontend
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
-        */
+
 }

@@ -3,12 +3,13 @@ package com.project.LibraryManagementSystem.controller;
 import com.project.LibraryManagementSystem.model.User;
 import com.project.LibraryManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
 
 
 @Controller
@@ -36,6 +37,20 @@ public class UserController
     {
         return "login";
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) 
+    {
+        String token = userService.verifyUser(user);
+
+        if ("Failed".equals(token)) 
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+        //
+        return ResponseEntity.ok(token);
+    }
+    
 
     @GetMapping("/dashboard")
     public ModelAndView getDashboardView() 
