@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitoring - Spring Boot Actuators</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; }
+        .container { width: 80%; margin: auto; background: white; padding: 20px; box-shadow: 0px 0px 10px gray; border-radius: 10px; }
+        h2 { color: #333; }
+        pre { text-align: left; background: #e3e3e3; padding: 10px; overflow-x: auto; border-radius: 5px; }
+        .status { font-weight: bold; padding: 10px; border-radius: 5px; display: inline-block; }
+        .status-up { background-color: #4CAF50; color: white; }
+        .status-down { background-color: #FF5733; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>System Monitoring - Spring Boot Actuators</h2>
+
+        <h3>Application Health</h3>
+        <p th:text="${healthStatus}" 
+           th:classappend="${healthStatus == 'UP' ? 'status status-up' : 'status status-down'}">
+        </p>
+        <pre th:text="${healthDetails}"></pre>
+
+        <h3>Application Info</h3>
+        <pre th:text="${info}"></pre>
+
+        <h3>Actuator Metrics</h3>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr th:each="metric : ${metrics}">
+                <td th:text="${metric.key}"></td>
+                <td th:text="${metric.value}"></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

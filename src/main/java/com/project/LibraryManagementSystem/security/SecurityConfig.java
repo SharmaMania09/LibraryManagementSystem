@@ -37,12 +37,27 @@ public class SecurityConfig
         return http
             .csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(request -> request.
-                                    requestMatchers("/users/login", "/users/register").permitAll()
+                                    requestMatchers("/users/login", "/users/register", "/actuators").permitAll()
                                     .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
+
+    /* This code is to disable the security temporarily for testing purpose
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
+    {
+        return http
+            .csrf(customizer -> customizer.disable())
+            .authorizeHttpRequests(request -> request.anyRequest().permitAll()) // 🔹 Disable authentication
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            //.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // ❌ Comment this line
+            .build();
+    }
+
+    */
 
     @Bean
     public AuthenticationManager authenticationManager() 
