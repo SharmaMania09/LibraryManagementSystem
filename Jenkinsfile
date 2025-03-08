@@ -7,7 +7,6 @@ pipeline
         DOCKER_IMAGE = "lms_app"  // Matches service name in docker-compose.yml
         CONTAINER_NAME = "lms_app"
         MYSQL_CONTAINER = "mysql_library"
-        JENKINS_CONTAINER = "jenkins_container"
     }
 
     stages 
@@ -16,7 +15,11 @@ pipeline
         {
             steps 
             {
-                sh 'git clone https://github.com/SharmaMania09/LibraryManagementSystem.git'  // Update with your actual repo
+                script 
+                {
+                    sh 'rm -rf LibraryManagementSystem || true'
+                    sh 'git clone https://github.com/SharmaMania09/LibraryManagementSystem.git'
+                }
             }
         }
 
@@ -24,7 +27,8 @@ pipeline
         {
             steps 
             {
-                sh 'mvn clean package'
+                sh 'chmod +x mvnw'
+                sh './mvnw clean package'
             }
         }
 

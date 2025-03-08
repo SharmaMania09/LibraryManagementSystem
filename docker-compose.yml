@@ -28,21 +28,8 @@ services:
     ports:
       - "8080:8080"
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins_container
-    restart: always
-    ports:
-      - "8081:8080"  # Jenkins UI
-      - "50000:50000"
-    networks:
-      - lms_network
-    volumes:
-      - jenkins_home:/var/jenkins_home
-
 networks:
   lms_network:
 
 volumes:
   mysql_data:
-  jenkins_home:
