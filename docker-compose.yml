@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_library
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: librarydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: lms_app
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/librarydb?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8080:8080"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_container
+    restart: always
+    ports:
+      - "8081:8080"  # Jenkins UI
+      - "50000:50000"
+    networks:
+      - lms_network
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+networks:
+  lms_network:
+
+volumes:
+  mysql_data:
+  jenkins_home:
