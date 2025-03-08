@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/SharmaMania09/LibraryManagementSystem.git'  // Update with your actual repo
+                git branch: 'main', url: 'https://github.com/SharmaMania09/LibraryManagementSystem.git'  // Update with your actual repo
             }
         }
 
