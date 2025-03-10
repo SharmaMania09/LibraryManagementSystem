@@ -37,7 +37,7 @@ public class SecurityConfig
         return http
             .csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(request -> request.
-                                    requestMatchers("/users/login", "/users/register", "/actuators").permitAll()
+                                    requestMatchers("/users/login", "/users/register", "/actuators/**").permitAll()
                                     .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
