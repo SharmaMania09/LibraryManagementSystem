@@ -1,37 +1,35 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_library
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: librarydb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: admin
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - lms_network
+#   mysql:
+#     image: mysql:8.0
+#     container_name: mysql_library
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: admin
+#       MYSQL_DATABASE: librarydb
+#       MYSQL_USER: root
+#       MYSQL_PASSWORD: admin
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+#     networks:
+#       - lms_network
 
   app:
     build: .
     container_name: lms_app
     restart: always
-    depends_on:
-      - mysql
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/librarydb?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: admin
+      environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:librarydb
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
     ports:
       - "8080:8080"
 
 networks:
   lms_network:
-
-volumes:
-  mysql_data:

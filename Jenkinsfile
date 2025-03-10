@@ -4,6 +4,52 @@ pipeline {
     environment {
         DOCKER_IMAGE = "lms_app"
         CONTAINER_NAME = "lms_app"
+        MAVEN_WRAPPER = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\LMS-CICD\\LibraryManagementSystem\\mvnw.cmd'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    bat '''
+                        if exist LibraryManagementSystem (rmdir /s /q LibraryManagementSystem)
+                        git clone https://github.com/SharmaMania09/LibraryManagementSystem.git
+                    '''
+                }
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                bat '''
+                    echo "Building application..."
+                    cd LibraryManagementSystem
+                    call mvnw.cmd clean package
+                '''
+            }
+        }
+
+        stage('Run App Container') {
+            steps {
+                bat '''
+                    echo "Starting Spring Boot App using Docker Compose..."
+                    cd LibraryManagementSystem
+                    docker-compose up -d
+                '''
+            }
+        }
+    }
+}
+
+
+/*
+
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "lms_app"
+        CONTAINER_NAME = "lms_app"
         MYSQL_CONTAINER = "mysql_library"
         MAVEN_WRAPPER = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\LMS-CICD\\LibraryManagementSystem\\mvnw.cmd'
     }
@@ -77,3 +123,5 @@ pipeline {
         }
     }
 }
+
+*/
